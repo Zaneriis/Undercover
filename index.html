@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Undercover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EEF7; --ink:#141A3A; --card:#FFFFFF; --line:#C9D1E6; --muted:#5B6385;
+  --accent:#FFB703; --accent-ink:#141A3A; --danger:#D62839; --civ:#1F8A7D; --und:#D62839; --white:#6A4CC9;
+  --font:"Bricolage Grotesque", ui-rounded, "Segoe UI", system-ui, -apple-system, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A3A; --ink:#EEF1FA; --card:#222A56; --line:#343E75; --muted:#9AA3C7;
+    --accent:#FFC53D; --danger:#FF6B6B; --civ:#4CC9B0; --und:#FF6B6B; --white:#A98BFF;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A3A; --ink:#EEF1FA; --card:#222A56; --line:#343E75; --muted:#9AA3C7;
+  --accent:#FFC53D; --danger:#FF6B6B; --civ:#4CC9B0; --und:#FF6B6B; --white:#A98BFF;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+#app{max-width:520px;margin:0 auto;padding:20px 18px 40px}
+h1{font-size:clamp(3rem,15vw,4.6rem);line-height:.9;font-weight:800;letter-spacing:-.04em;margin:18px 0 6px;position:relative;display:inline-block}
+h1 .bar{position:absolute;left:-4px;right:-4px;top:42%;height:.28em;background:var(--ink);border-radius:3px;transform-origin:left;animation:redact 1.1s .3s cubic-bezier(.7,0,.2,1) both}
+@keyframes redact{0%{transform:scaleX(0)}55%{transform:scaleX(1)}100%{transform:scaleX(1);opacity:.0}}
+.tag{color:var(--muted);margin:0 0 24px}
+h2{font-size:1.35rem;font-weight:800;letter-spacing:-.01em;margin:0 0 12px}
+h2 small{font-weight:400;color:var(--muted);font-size:1rem}
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
+.add{display:flex;gap:8px}
+input[type=text]{flex:1;min-width:0;font:inherit;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+input[type=text]:focus{outline:3px solid var(--accent);outline-offset:1px}
+button{font:inherit;cursor:pointer;border:none;border-radius:12px;padding:12px 16px;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);font-weight:600}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.primary{display:block;width:100%;background:var(--accent);color:var(--accent-ink);border-color:transparent;font-size:1.15rem;font-weight:800;padding:17px;border-radius:16px;margin-top:10px}
+.ghost{display:block;width:100%;background:transparent;margin-top:10px}
+.plist{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.plist li{display:flex;align-items:center;gap:4px;background:var(--bg);border-radius:999px;padding:4px 4px 4px 14px;font-weight:600}
+.plist li button{border:none;background:transparent;padding:4px 10px;border-radius:999px;color:var(--muted);font-size:1.1rem;line-height:1}
+.empty{color:var(--muted);margin:12px 0 0}
+.stepper{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)}
+.stepper:first-of-type{border-top:none}
+.stepper .ctl{display:flex;align-items:center;gap:12px}
+.stepper .ctl button{width:44px;height:44px;padding:0;font-size:1.3rem;border-radius:50%}
+.stepper .n{min-width:1.5ch;text-align:center;font-size:1.3rem;font-weight:800}
+.desc{color:var(--muted);font-size:.9rem}
+.summary{margin:10px 0 0;color:var(--muted)}
+.levels{display:grid;gap:8px}
+.lvl{display:block;width:100%;text-align:left;padding:13px 15px;border-radius:14px;background:var(--bg)}
+.lvl strong{display:block;font-weight:800}
+.lvl span{display:block;font-weight:400;font-size:.9rem;color:var(--muted);margin-top:2px}
+.lvl.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lvl.on span{color:var(--bg);opacity:.72}
+.err{color:var(--danger);font-weight:600;min-height:1.4em;margin:8px 0 0;text-align:center}
+details{margin:6px 0 16px}
+summary{cursor:pointer;font-weight:600;color:var(--muted);padding:6px 0}
+details p{margin:8px 0;color:var(--ink)}
+.progress{color:var(--muted);font-weight:600;margin-top:10px}
+.pass{font-size:1.3rem;font-weight:400;margin:6px 0 22px;line-height:1.2}
+.pass strong{display:block;font-size:clamp(2.2rem,11vw,3.2rem);font-weight:800;letter-spacing:-.03em}
+.card{perspective:1200px;height:300px;margin:0 0 18px;user-select:none;-webkit-user-select:none;touch-action:none;cursor:pointer;border-radius:22px}
+.card:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.inner{position:relative;height:100%;transition:transform .35s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.card.shown .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.front{background:var(--ink);color:var(--bg);background-image:repeating-linear-gradient(-45deg,transparent 0 14px,rgba(255,255,255,.05) 14px 28px)}
+.front .seal{width:74px;height:74px;border-radius:50%;background:var(--accent);margin-bottom:18px;display:grid;place-items:center;font-size:2rem}
+.front p{margin:0;font-weight:600}
+.back{background:var(--card);border:2px solid var(--ink);transform:rotateY(180deg)}
+.back .lbl{color:var(--muted);margin:0 0 6px}
+.back .word{font-size:clamp(2.2rem,11vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.05;word-break:break-word}
+.back .word.w{color:var(--white)}
+.hint{color:var(--muted);text-align:center;margin:0 0 6px;font-size:.95rem}
+.order{list-style:none;counter-reset:o;padding:0;margin:0}
+.order li{counter-increment:o;display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line);font-size:1.15rem;font-weight:600}
+.order li:first-child{border-top:none}
+.order li::before{content:counter(o);width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--bg);font-weight:800;font-size:1rem}
+.order li:first-child::before{background:var(--accent);color:var(--accent-ink)}
+.round{font-size:clamp(2.6rem,13vw,3.6rem);font-weight:800;letter-spacing:-.04em;margin:14px 0 4px;line-height:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:6px}
+.grid button{padding:18px 10px;font-size:1.1rem;border-radius:16px;background:var(--card);word-break:break-word}
+.grid button.sel{background:var(--danger);color:#fff;border-color:var(--danger)}
+.peek{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.peek button{padding:8px 14px;border-radius:999px}
+.verdict{text-align:center;padding:30px 0 10px}
+.verdict .who{font-size:clamp(2.2rem,11vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1}
+.verdict .was{color:var(--muted);margin:8px 0 12px;font-size:1.1rem}
+.role{display:inline-block;font-weight:800;font-size:1.6rem;padding:8px 20px;border-radius:14px;color:#fff}
+.r-civil{background:var(--civ)} .r-under{background:var(--und)} .r-white{background:var(--white)}
+.small-role{font-size:.85rem;padding:3px 10px;border-radius:999px;color:#fff;font-weight:700;white-space:nowrap}
+.banner{padding:26px 20px;border-radius:22px;color:#fff;margin:16px 0}
+.banner h2{font-size:clamp(1.8rem,9vw,2.4rem);margin:0 0 4px;line-height:1.05}
+.banner p{margin:0;opacity:.92}
+.words{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.words div{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px}
+.words span{display:block;color:var(--muted);font-size:.9rem}
+.words strong{font-size:1.4rem;font-weight:800}
+.rows{list-style:none;padding:0;margin:0}
+.rows li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.rows li:first-child{border-top:none}
+.rows .out{color:var(--muted);text-decoration:line-through}
+.pts{font-weight:800;font-size:1.15rem}
+.link{background:none;border:none;color:var(--muted);text-decoration:underline;padding:6px;font-weight:400;font-size:.9rem;display:block;margin:6px auto 0}
+@media (prefers-reduced-motion: reduce){ .inner{transition:none} h1 .bar{animation:none;display:none} }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const PAIRS=[["Chat","Chien"],["Plage","Piscine"],["Café","Thé"],["Pizza","Burger"],["Guitare","Violon"],["Train","Métro"],["Vélo","Trottinette"],["Pomme","Poire"],["Soleil","Lune"],["Neige","Pluie"],["Montagne","Colline"],["Mer","Lac"],["Lion","Tigre"],["Avion","Hélicoptère"],["Livre","Magazine"],["Cinéma","Théâtre"],["Crêpe","Gaufre"],["Croissant","Pain au chocolat"],["Médecin","Infirmier"],["Policier","Pompier"],["Instagram","TikTok"],["Netflix","YouTube"],["Football","Rugby"],["Tennis","Badminton"],["Ski","Snowboard"],["Château","Palais"],["Pirate","Viking"],["Vampire","Zombie"],["Sorcière","Fée"],["Noël","Halloween"],["Mariage","Anniversaire"],["Lunettes","Lentilles"],["Montre","Bracelet"],["Parapluie","Imperméable"],["Cidre","Bière"],["Camembert","Brie"],["Vin","Champagne"],["Sushi","Ramen"],["Chocolat","Caramel"],["Glace","Sorbet"],["Ketchup","Mayonnaise"],["Frites","Chips"],["Dentiste","Coiffeur"],["Hôpital","Pharmacie"],["Supermarché","Marché"],["Canapé","Lit"],["Douche","Bain"],["Fourchette","Cuillère"],["Téléphone","Tablette"],["Clavier","Souris"],["Minecraft","Fortnite"],["Paris","Londres"],["Pingouin","Manchot"],["Dauphin","Requin"],["Abeille","Guêpe"],["Papillon","Libellule"],["Rose","Tulipe"],["Sapin","Palmier"],["Ours","Loup"],["Cheval","Âne"],["Poule","Canard"],["Serpent","Lézard"],["Fantôme","Squelette"],["Robot","Extraterrestre"],["Roi","Président"],["Astronaute","Pilote"],["Journal","Radio"],["Photo","Selfie"],["Tatouage","Piercing"],["Barbe","Moustache"],["Bougie","Lampe"],["Pique-nique","Barbecue"],["Camping","Hôtel"],["Valise","Sac à dos"],["Plongée","Surf"],["Karaoké","Boîte de nuit"],["Magicien","Clown"],["Ninja","Samouraï"],["Dragon","Dinosaure"],["Piano","Batterie"],["Oreiller","Couette"],["Bus","Tramway"],["Violoncelle","Contrebasse"],["Carotte","Radis"],["Mouton","Chèvre"]];
+const PAIRS_LOIN=[["Chat","Cheval"],["Plage","Forêt"],["Café","Limonade"],["Pizza","Soupe"],["Guitare","Trompette"],["Train","Bateau"],["Vélo","Camion"],["Pomme","Pastèque"],["Soleil","Nuage"],["Neige","Orage"],["Montagne","Désert"],["Mer","Marais"],["Lion","Souris"],["Avion","Fusée"],["Livre","Podcast"],["Cinéma","Musée"],["Crêpe","Steak"],["Croissant","Quiche"],["Médecin","Vétérinaire"],["Policier","Juge"],["Instagram","LinkedIn"],["Netflix","Spotify"],["Football","Golf"],["Tennis","Boxe"],["Ski","Natation"],["Château","Cabane"],["Pirate","Chevalier"],["Vampire","Licorne"],["Sorcière","Géant"],["Noël","Carnaval"],["Mariage","Déménagement"],["Lunettes","Casquette"],["Montre","Collier"],["Parapluie","Bottes"],["Cidre","Whisky"],["Camembert","Yaourt"],["Vin","Lait"],["Sushi","Couscous"],["Chocolat","Piment"],["Glace","Gâteau"],["Ketchup","Vinaigre"],["Frites","Salade"],["Dentiste","Architecte"],["Hôpital","École"],["Supermarché","Bibliothèque"],["Canapé","Tabouret"],["Douche","Piscine"],["Fourchette","Casserole"],["Téléphone","Télévision"],["Clavier","Imprimante"],["Minecraft","Échecs"],["Paris","Tokyo"],["Pingouin","Chameau"],["Dauphin","Crabe"],["Abeille","Fourmi"],["Papillon","Araignée"],["Rose","Cactus"],["Sapin","Champignon"],["Ours","Lapin"],["Vache","Escargot"],["Poule","Aigle"],["Serpent","Tortue"],["Fantôme","Extraterrestre"],["Robot","Marionnette"],["Roi","Clochard"],["Astronaute","Agriculteur"],["Journal","Bande dessinée"],["Photo","Peinture"],["Tatouage","Perruque"],["Bougie","Feu d’artifice"],["Pique-nique","Banquet"],["Camping","Croisière"],["Valise","Portefeuille"],["Plongée","Parachute"],["Karaoké","Opéra"],["Magicien","Acrobate"],["Ninja","Bûcheron"],["Dragon","Mouche"],["Piano","Tambourin"],["Oreiller","Hamac"],["Bus","Téléphérique"],["Violoncelle","Harmonica"],["Carotte","Ananas"],["Mouton","Crocodile"]];
+const PAIRS_LUNE=[["Chat","Aspirateur"],["Plage","Ascenseur"],["Café","Chaussette"],["Pizza","Télescope"],["Guitare","Frigo"],["Train","Dentifrice"],["Vélo","Nuage"],["Pomme","Trampoline"],["Soleil","Serpillière"],["Neige","Clavier"],["Montagne","Yaourt"],["Mer","Horloge"],["Lion","Parapluie"],["Avion","Fromage"],["Livre","Marteau"],["Cinéma","Oignon"],["Dentiste","Volcan"],["Croissant","Ordinateur"],["Médecin","Banane"],["Policier","Confiture"],["Instagram","Marmite"],["Netflix","Chaussure"],["Football","Bibliothèque"],["Tennis","Soupe"],["Ski","Micro-ondes"],["Château","Chewing-gum"],["Pirate","Imprimante"],["Vampire","Tracteur"],["Sorcière","Tondeuse"],["Noël","Perceuse"],["Mariage","Poubelle"],["Lunettes","Saucisse"],["Montre","Baleine"],["Pingouin","Tambour"],["Cidre","Satellite"],["Miroir","Cacahuète"],["Ours","Balai"],["Lune","Agrafeuse"],["Piano","Moustique"],["Pyramide","Spaghetti"],["Requin","Bougie"],["Guêpe","Tapis"],["Rose","Tournevis"],["Sapin","Lave-linge"],["Vache","Télécommande"],["Poule","Montgolfière"],["Serpent","Pain grillé"],["Fantôme","Brosse à dents"],["Robot","Camembert"],["Roi","Nouille"],["Astronaute","Oreiller"],["Journal","Carotte"],["Photo","Parachute"],["Tatouage","Lasagne"],["Camping","Stylo"],["Valise","Cascade"],["Plongée","Radiateur"],["Karaoké","Betterave"],["Magicien","Autoroute"],["Ninja","Grille-pain"],["Dragon","Trombone"],["Bus","Kiwi"],["Violoncelle","Pneu"],["Escargot","Hélicoptère"],["Mouton","Lampadaire"],["Désert","Ventilateur"],["Boulangerie","Astéroïde"],["Ampoule","Kangourou"],["Pluie","Échelle"],["Papillon","Cornichon"],["Facteur","Gaufrier"],["Cheminée","Pastèque"],["Perroquet","Calculatrice"],["Fourmi","Canapé"],["Trottinette","Brocoli"],["Dinosaure","Cravate"],["Opéra","Tronçonneuse"],["Chameau","Clé USB"],["Sirène","Barbecue"],["Pompier","Mangue"]];
+const DECKS=[
+  {name:"Mots proches",pairs:PAIRS,sample:"Chat / Chien",desc:"L’undercover peut se fondre dans la masse."},
+  {name:"Mots éloignés",pairs:PAIRS_LOIN,sample:"Chat / Cheval",desc:"Il faut rester vague pour ne pas se trahir."},
+  {name:"Mots très éloignés",pairs:PAIRS_LUNE,sample:"Chat / Aspirateur",desc:"L’undercover tient rarement deux tours. Parties courtes."}
+];
+const ROLE={civil:"Civil",under:"Undercover",white:"Mr. White"};
+const KEY="undercover-v1";
+const app=document.getElementById("app");
+const BLANK={players:[],nUnder:1,nWhite:0,scores:{},hist:{},used:{},lastPairs:{},gameNo:0,level:0};
+let S=load(); let G=null; let screen="setup"; let err=""; let peekIdx=null; let guessMsg=""; let askQuit=false;
+
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.players))return Object.assign({},BLANK,s);}catch(e){}return Object.assign({},BLANK);}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+/* Tirage : entiers non biaisés via crypto, avec repli sur Math.random */
+const RND=(()=>{
+  const c=(typeof crypto!=="undefined"&&crypto.getRandomValues)?crypto:null;
+  return{
+    int(n){ if(n<=1)return 0;
+      if(c){const lim=Math.floor(4294967296/n)*n,a=new Uint32Array(1);let v;
+        do{c.getRandomValues(a);v=a[0];}while(v>=lim); return v%n;}
+      return Math.floor(Math.random()*n);},
+    float(){ if(c){const a=new Uint32Array(1);c.getRandomValues(a);return (a[0]+0.5)/4294967296;}
+      return Math.random()||1e-12;}
+  };
+})();
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=RND.int(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function hist(n){const h=S.hist[n]||(S.hist[n]={games:0,civil:0,under:0,white:0,debt:0,starts:0});
+  if(h.starts===undefined)h.starts=0; return h;}
+function clamp(x,m){return Math.max(-m,Math.min(m,x));}
+
+function lvl(){return Math.min(Math.max(S.level|0,0),DECKS.length-1);}
+function deck(){return DECKS[lvl()];}
+
+/* Paires tirées dans un sac, un sac par liste :
+   aucune paire ne revient avant que toutes celles de sa liste soient passées */
+function pickPair(){
+  const L=lvl(), list=DECKS[L].pairs;
+  if(!S.used||typeof S.used!=="object")S.used={};
+  if(!S.lastPairs||typeof S.lastPairs!=="object")S.lastPairs={};
+  let u=Array.isArray(S.used[L])?S.used[L]:(S.used[L]=[]);
+  if(u.length>=list.length)u=S.used[L]=(S.lastPairs[L]!=null?[S.lastPairs[L]]:[]);
+  const avail=[]; for(let i=0;i<list.length;i++) if(u.indexOf(i)<0) avail.push(i);
+  const idx=avail[RND.int(avail.length)];
+  u.push(idx); S.lastPairs[L]=idx;
+  let [a,b]=list[idx]; if(RND.int(2))[a,b]=[b,a];
+  return [a,b];
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function norm(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function civCount(){return S.players.length-S.nUnder-S.nWhite;}
+function validate(){
+  const n=S.players.length,imp=S.nUnder+S.nWhite;
+  if(n<3)return "Il faut au moins 3 joueurs.";
+  if(imp<1)return "Ajoute au moins un Undercover ou un Mr. White.";
+  if(civCount()<=imp)return "Il faut plus de civils que d’imposteurs.";
+  return "";
+}
+function roleTag(r){return `<span class="small-role r-${r}">${ROLE[r]}</span>`;}
+
+/* ---------- Rendu ---------- */
+function render(){
+  if(screen!=="play")askQuit=false;
+  const f={setup,reveal,play,peek,vote,white,verdict,end}[screen];
+  app.innerHTML=f(); bindCard(); window.scrollTo(0,0);
+  const auto=app.querySelector("[autofocus]"); if(auto&&screen!=="setup")auto.focus();
+}
+
+function setup(){
+  const n=S.players.length, v=validate();
+  return `
+  <h1>Undercover<span class="bar"></span></h1>
+  <p class="tag">Un seul téléphone, des mots secrets, et des imposteurs parmi vous.</p>
+  <section class="panel">
+    <h2>Joueurs <small>${n}</small></h2>
+    <div class="add"><input type="text" id="nameIn" placeholder="Prénom" maxlength="16" autocomplete="off"><button data-a="add">Ajouter</button></div>
+    ${n?`<ul class="plist">${S.players.map((p,i)=>`<li>${esc(p)}<button data-a="del" data-i="${i}" aria-label="Retirer ${esc(p)}">×</button></li>`).join("")}</ul>`:`<p class="empty">Ajoute les prénoms des joueurs, dans l’ordre où vous êtes assis.</p>`}
+  </section>
+  <section class="panel">
+    <h2>Rôles</h2>
+    <div class="stepper"><div><strong>Undercover</strong><div class="desc">Reçoit un mot proche</div></div>
+      <div class="ctl"><button data-a="dec" data-k="nUnder" aria-label="Moins d’undercover">−</button><span class="n">${S.nUnder}</span><button data-a="inc" data-k="nUnder" aria-label="Plus d’undercover">+</button></div></div>
+    <div class="stepper"><div><strong>Mr. White</strong><div class="desc">Ne reçoit aucun mot</div></div>
+      <div class="ctl"><button data-a="dec" data-k="nWhite" aria-label="Moins de Mr. White">−</button><span class="n">${S.nWhite}</span><button data-a="inc" data-k="nWhite" aria-label="Plus de Mr. White">+</button></div></div>
+    <p class="summary">${Math.max(civCount(),0)} civil${civCount()>1?"s":""}, ${S.nUnder} undercover, ${S.nWhite} Mr. White</p>
+  </section>
+  <section class="panel">
+    <h2>Écart entre les mots</h2>
+    <div class="levels">${DECKS.map((d,i)=>`
+      <button data-a="setLevel" data-i="${i}" class="lvl${lvl()===i?" on":""}" aria-pressed="${lvl()===i}">
+        <strong>${d.name}</strong><span>${esc(d.sample)} — ${d.desc}</span></button>`).join("")}</div>
+  </section>
+  ${histPanel()}
+  <details><summary>Comment on joue ?</summary>
+    <p>Les civils reçoivent tous le même mot. Les undercovers reçoivent un mot proche, sans savoir qu’ils sont undercover. Mr. White n’a aucun mot et doit bluffer.</p>
+    <p>À chaque tour, chacun décrit son mot en un mot ou une courte phrase, puis le groupe vote pour éliminer quelqu’un. C’est l’appli qui désigne celui qui ouvre, à tour de rôle ; Mr. White n’ouvre jamais, il n’aurait aucun indice.</p>
+    <p>Les civils gagnent s’ils éliminent tous les imposteurs. Les imposteurs gagnent s’il ne reste qu’un seul civil. Mr. White éliminé peut encore gagner en devinant le mot des civils.</p>
+  </details>
+  <button class="primary" data-a="start" ${v?"disabled":""}>Distribuer les mots</button>
+  <p class="err">${esc(err||(n?v:""))}</p>
+  ${Object.keys(S.scores).length?`<button class="link" data-a="resetScores">Remettre les scores à zéro</button>`:""}`;
+}
+
+function histPanel(){
+  const rows=S.players.filter(p=>S.hist[p]&&S.hist[p].games);
+  if(!rows.length)return "";
+  const d=deck(), seen=((S.used||{})[lvl()]||[]).length, pool=d.pairs.length-seen;
+  return `<details><summary>Qui a eu quels rôles (${S.gameNo} partie${S.gameNo>1?"s":""})</summary>
+    <ul class="rows" style="margin-top:8px">${rows.map(p=>{const h=S.hist[p];
+      return `<li><span>${esc(p)}</span><span class="desc">${h.games} partie${h.games>1?"s":""} · ${h.under+h.white} imposteur${h.under+h.white>1?"s":""} · a ouvert ${h.starts||0} tour${(h.starts||0)>1?"s":""}</span></li>`;}).join("")}</ul>
+    <p class="summary">Les imposteurs sont tirés au hasard, mais l’appli garde une trace : celui qui l’a été souvent a un peu moins de chances de l’être au tour suivant. Sur la durée, tout le monde y passe autant.</p>
+    <p class="summary">Liste « ${esc(d.name)} » : ${pool} paire${pool>1?"s":""} encore jamais sortie${pool>1?"s":""} sur ${d.pairs.length}.</p>
+    <button class="ghost" data-a="resetHist">Oublier l’historique</button></details>`;
+}
+
+function cardHTML(p){
+  const back=p.role==="white"
+    ?`<p class="lbl">Tu es</p><div class="word w">Mr. White</div><p class="lbl" style="margin-top:10px">Tu n’as pas de mot. Écoute les autres et bluffe.</p>`
+    :`<p class="lbl">Ton mot</p><div class="word">${esc(p.word)}</div>`;
+  return `<div class="card" id="card" tabindex="0" role="button" aria-label="Maintenir pour voir ton mot">
+    <div class="inner"><div class="face front"><div class="seal" aria-hidden="true">🤫</div><p>Maintiens appuyé pour voir ton mot</p></div>
+    <div class="face back">${back}</div></div></div>`;
+}
+
+function reveal(){
+  const p=G.players[G.revealIdx], last=G.revealIdx===G.players.length-1;
+  return `<p class="progress">Joueur ${G.revealIdx+1} sur ${G.players.length}</p>
+  <h2 class="pass">Passe le téléphone à<strong>${esc(p.name)}</strong></h2>
+  ${cardHTML(p)}
+  <p class="hint">Relâche pour cacher. Personne d’autre ne doit regarder.</p>
+  <button class="primary" data-a="nextReveal" ${G.seen?"":"disabled"}>${last?"Commencer la partie":"C’est vu, je passe le téléphone"}</button>`;
+}
+
+function play(){
+  return `<p class="round">Tour ${G.round}</p>
+  <p class="tag">Chacun décrit son mot en un mot ou une courte phrase, dans cet ordre&nbsp;:</p>
+  <section class="panel"><ol class="order">${G.order.map(i=>`<li>${esc(G.players[i].name)}</li>`).join("")}</ol></section>
+  <button class="primary" data-a="toVote">Passer au vote</button>
+  <details><summary>Revoir mon mot</summary>
+    <div class="peek">${G.players.map((p,i)=>p.alive?`<button data-a="peek" data-i="${i}">${esc(p.name)}</button>`:"").join("")}</div>
+  </details>
+  ${askQuit
+    ?`<p class="err">Abandonner la partie en cours ?</p>
+      <button class="ghost" data-a="quit">Oui, revenir aux joueurs</button>
+      <button class="link" data-a="keepGoing">Non, on continue</button>`
+    :`<button class="link" data-a="quit">Abandonner la partie</button>`}`;
+}
+
+function peek(){
+  const p=G.players[peekIdx];
+  return `<h2 class="pass">Téléphone à<strong>${esc(p.name)}</strong></h2>${cardHTML(p)}
+  <p class="hint">Relâche pour cacher.</p><button class="primary" data-a="backPlay">Retour au tour</button>`;
+}
+
+function vote(){
+  const sel=G.selected;
+  return `<p class="round">Vote</p>
+  <p class="tag">Débattez, votez à main levée, puis touchez le joueur éliminé.</p>
+  <div class="grid">${G.players.map((p,i)=>p.alive?`<button data-a="sel" data-i="${i}" class="${sel===i?"sel":""}" aria-pressed="${sel===i}">${esc(p.name)}</button>`:"").join("")}</div>
+  <button class="primary" data-a="elim" ${sel===null?"disabled":""}>${sel===null?"Choisis un joueur":"Éliminer "+esc(G.players[sel].name)}</button>
+  <button class="ghost" data-a="backPlay">Retour au tour</button>`;
+}
+
+function white(){
+  const p=G.players[G.eliminated];
+  return `<div class="verdict"><div class="who">${esc(p.name)}</div><p class="was">était</p><span class="role r-white">Mr. White</span></div>
+  <p class="tag" style="text-align:center">Dernière chance&nbsp;: devine le mot des civils pour gagner.</p>
+  <div class="add"><input type="text" id="guessIn" placeholder="Le mot des civils" maxlength="30" autocomplete="off" autofocus><button data-a="guess">Valider</button></div>
+  <p class="err">${esc(guessMsg)}</p>`;
+}
+
+function verdict(){
+  const p=G.players[G.eliminated];
+  const extra=p.role==="white"?`<p class="tag" style="text-align:center">Mauvaise réponse, Mr. White est éliminé.</p>`:"";
+  return `<div class="verdict"><div class="who">${esc(p.name)}</div><p class="was">était</p><span class="role r-${p.role}">${ROLE[p.role]}</span></div>
+  ${extra}<button class="primary" data-a="continue" autofocus>${G.winner?"Voir le résultat":"Tour suivant"}</button>`;
+}
+
+function end(){
+  const W={civil:["Les civils gagnent","Tous les imposteurs ont été démasqués.","var(--civ)"],
+           impostors:["Les imposteurs gagnent","Il ne reste qu’un seul civil.","var(--und)"],
+           white:["Mr. White gagne","Il a deviné le mot des civils.","var(--white)"]}[G.winner];
+  const board=Object.entries(S.scores).sort((a,b)=>b[1]-a[1]);
+  return `<div class="banner" style="background:${W[2]}"><h2>${W[0]}</h2><p>${W[1]}</p></div>
+  <div class="words"><div><span>Mot des civils</span><strong>${esc(G.civWord)}</strong></div><div><span>Mot undercover</span><strong>${esc(G.undWord)}</strong></div></div>
+  <section class="panel"><h2>Rôles</h2><ul class="rows">${G.players.map(p=>`<li><span class="${p.alive?"":"out"}">${esc(p.name)}</span>${roleTag(p.role)}</li>`).join("")}</ul></section>
+  <section class="panel"><h2>Scores</h2><ul class="rows">${board.map(([n,s])=>`<li><span>${esc(n)}</span><span class="pts">${s}</span></li>`).join("")}</ul>
+  <p class="summary">Victoire des civils : 2 pts par civil. Undercover : 10 pts. Mr. White : 6 pts.</p></section>
+  <button class="primary" data-a="start">Rejouer avec les mêmes joueurs</button>
+  <button class="ghost" data-a="quit">Modifier les joueurs</button>`;
+}
+
+/* ---------- Carte à maintenir ---------- */
+function bindCard(){
+  const c=document.getElementById("card"); if(!c)return;
+  const on=e=>{if(e&&e.cancelable)e.preventDefault();c.classList.add("shown");
+    if(screen==="reveal"&&!G.seen){G.seen=true;const b=app.querySelector('[data-a="nextReveal"]');if(b)b.disabled=false;}};
+  const off=()=>c.classList.remove("shown");
+  c.addEventListener("pointerdown",on);
+  ["pointerup","pointerleave","pointercancel"].forEach(ev=>c.addEventListener(ev,off));
+  c.addEventListener("contextmenu",e=>e.preventDefault());
+  c.addEventListener("keydown",e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();on();}});
+  c.addEventListener("keyup",e=>{if(e.key===" "||e.key==="Enter")off();});
+}
+
+/* ---------- Logique ---------- */
+/* Rôles : tirage pondéré sans remise. Chaque joueur porte une "dette" —
+   elle monte quand il est civil, descend quand il est imposteur — ce qui
+   évite qu'une même personne enchaîne les rôles d'imposteur. */
+function startGame(){
+  err=validate(); if(err){screen="setup";render();return;}
+  const [a,b]=pickPair();
+  const impN=S.nUnder+S.nWhite, rate=impN/S.players.length;
+  const keyed=shuffle(S.players.map(name=>{
+    const w=Math.exp(clamp(hist(name).debt,3)*1.6);
+    return {name,key:Math.pow(RND.float(),1/w)};
+  })).sort((x,y)=>y.key-x.key);
+  const imps=keyed.slice(0,impN).map(x=>x.name);
+  const impRoles=shuffle([...Array(S.nUnder).fill("under"),...Array(S.nWhite).fill("white")]);
+  const roleOf={}; S.players.forEach(n=>{roleOf[n]="civil";});
+  imps.forEach((n,i)=>{roleOf[n]=impRoles[i];});
+  S.players.forEach(name=>{
+    const h=hist(name), r=roleOf[name];
+    h.games++; h[r]++;
+    h.debt=clamp(h.debt+rate-(r==="civil"?0:1),4);
+  });
+  S.gameNo=(S.gameNo||0)+1; save();
+  G={round:1,civWord:a,undWord:b,revealIdx:0,seen:false,selected:null,eliminated:null,winner:null,order:[],lastFirst:null,
+     players:S.players.map(name=>({name,role:roleOf[name],
+       word:roleOf[name]==="civil"?a:roleOf[name]==="under"?b:null,alive:true}))};
+  screen="reveal"; render();
+}
+/* Premier à parler : tour de rôle mémorisé d'une partie à l'autre.
+   On prend celui qui a le moins souvent ouvert, au hasard en cas d'égalité —
+   donc personne n'ouvre deux fois avant que tout le monde y soit passé.
+   Mr. White n'ouvre jamais : il n'aurait aucun indice pour parler. */
+function makeOrder(){
+  const alive=G.players.map((p,i)=>i).filter(i=>G.players[i].alive);
+  let cand=alive.filter(i=>G.players[i].role!=="white");
+  if(!cand.length)cand=alive.slice();
+  if(cand.length>1&&G.lastFirst!==null){
+    const f=cand.filter(i=>i!==G.lastFirst); if(f.length)cand=f;
+  }
+  const min=Math.min(...cand.map(i=>hist(G.players[i].name).starts));
+  const pool=cand.filter(i=>hist(G.players[i].name).starts===min);
+  const first=pool[RND.int(pool.length)];
+  hist(G.players[first].name).starts++; save();
+  G.lastFirst=first;
+  const k=alive.indexOf(first); G.order=alive.slice(k).concat(alive.slice(0,k));
+}
+function checkWin(){
+  const alive=G.players.filter(p=>p.alive);
+  const imp=alive.filter(p=>p.role!=="civil").length, civ=alive.length-imp;
+  if(imp===0)return "civil"; if(civ<=1)return "impostors"; return null;
+}
+function award(){
+  G.players.forEach(p=>{
+    let pts=0;
+    if(G.winner==="civil"&&p.role==="civil")pts=2;
+    if(G.winner==="impostors"&&p.role==="under")pts=10;
+    if((G.winner==="impostors"||G.winner==="white")&&p.role==="white")pts=6;
+    S.scores[p.name]=(S.scores[p.name]||0)+pts;
+  });
+  save();
+}
+function addPlayer(){
+  const inp=document.getElementById("nameIn"); const v=(inp.value||"").trim().replace(/\s+/g," ");
+  if(!v){err="Écris un prénom avant d’ajouter.";}
+  else if(S.players.some(p=>p.toLowerCase()===v.toLowerCase())){err="Ce prénom est déjà dans la liste.";}
+  else if(S.players.length>=20){err="20 joueurs maximum.";}
+  else{S.players.push(v);err="";save();}
+  render(); const n=document.getElementById("nameIn"); if(n)n.focus();
+}
+function doGuess(){
+  const g=(document.getElementById("guessIn").value||"").trim();
+  if(!g){guessMsg="Écris un mot pour tenter ta chance.";render();return;}
+  guessMsg="";
+  if(norm(g)===norm(G.civWord)){G.winner="white";award();screen="end";}
+  else{G.winner=checkWin();screen="verdict";}
+  render();
+}
+
+const A={
+  add:addPlayer,
+  del:b=>{S.players.splice(+b.dataset.i,1);err="";save();render();},
+  inc:b=>{S[b.dataset.k]++;err="";save();render();},
+  dec:b=>{S[b.dataset.k]=Math.max(0,S[b.dataset.k]-1);err="";save();render();},
+  start:startGame,
+  resetScores:()=>{S.scores={};save();render();},
+  setLevel:b=>{S.level=+b.dataset.i;err="";save();render();},
+  resetHist:()=>{S.hist={};S.used={};S.lastPairs={};S.gameNo=0;save();render();},
+  nextReveal:()=>{if(G.revealIdx<G.players.length-1){G.revealIdx++;G.seen=false;screen="reveal";}else{makeOrder();screen="play";}render();},
+  peek:b=>{peekIdx=+b.dataset.i;screen="peek";render();},
+  backPlay:()=>{screen="play";render();},
+  toVote:()=>{G.selected=null;screen="vote";render();},
+  sel:b=>{G.selected=+b.dataset.i;render();},
+  elim:()=>{const i=G.selected;if(i===null)return;G.players[i].alive=false;G.eliminated=i;
+    if(G.players[i].role==="white"){guessMsg="";screen="white";}else{G.winner=checkWin();screen="verdict";}render();},
+  guess:doGuess,
+  continue:()=>{if(G.winner){award();screen="end";}else{G.round++;makeOrder();screen="play";}render();},
+  keepGoing:()=>{askQuit=false;render();},
+  quit:()=>{if(screen==="play"&&!askQuit){askQuit=true;render();return;}
+    G=null;askQuit=false;screen="setup";render();}
+};
+app.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b||b.disabled)return;A[b.dataset.a](b);});
+app.addEventListener("keydown",e=>{if(e.key!=="Enter")return;
+  if(e.target.id==="nameIn"){e.preventDefault();addPlayer();}
+  if(e.target.id==="guessIn"){e.preventDefault();doGuess();}});
+render();
+</script>
+</body>
+</html>
